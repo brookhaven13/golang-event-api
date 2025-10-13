@@ -25,6 +25,19 @@ type loginResponse struct {
 	Token string `json:"token"`
 }
 
+// login authenticates user and returns JWT token
+//
+// @Summary User login
+// @Description Authenticate user with email and password
+// @Tags authentication
+// @Accept json
+// @Produce json
+// @Param credentials body loginRequest true "User login credentials"
+// @Success 200 {object} loginResponse
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /auth/login [post]
 func (app *application) login(c *gin.Context) {
 	var auth loginRequest
 
@@ -66,6 +79,19 @@ func (app *application) login(c *gin.Context) {
 	c.JSON(http.StatusOK, loginResponse{Token: tokenString})
 }
 
+// registerUser creates a new user account
+//
+// @Summary User registration
+// @Description Create a new user account
+// @Tags authentication
+// @Accept json
+// @Produce json
+// @Param user body registerRequest true "User registration data"
+// @Success 201 {object} database.User
+// @Failure 400 {object} map[string]string
+// @Failure 409 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /auth/register [post]
 func (app *application) registerUser(c *gin.Context) {
 	var register registerRequest
 

@@ -6,9 +6,24 @@ import (
 	"event-api-app/internal/env"
 	"log"
 
+	_ "event-api-app/docs"
+
 	_ "github.com/joho/godotenv/autoload"
 	_ "github.com/mattn/go-sqlite3"
 )
+
+// @title Go Gin Rest API
+// @version 1.0
+// @description This is a sample server for a Go Gin Rest API application.
+// @termsOfService http://swagger.io/terms/
+// @contact.name API Support
+// @contact.email support@example.com
+// @host localhost:8080
+// @BasePath /api/v1
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Enter your bearer token in the format **Bearer &lt;token&gt;**
 
 type application struct {
 	port      int

@@ -8,6 +8,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// createEvent creates a new event
+//
+// @Summary Create a new event
+// @Description Create a new event with the provided information
+// @Tags events
+// @Accept json
+// @Produce json
+// @Param event body database.Event true "Event object to be created"
+// @Success 201 {object} database.Event
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Security BearerAuth
+// @Router /events [post]
 func (app *application) createEvent(c *gin.Context) {
 	var event database.Event
 
@@ -15,6 +29,9 @@ func (app *application) createEvent(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	user := app.GetUserFromContext(c)
+	event.OwnerId = user.Id
 
 	err := app.models.Events.Insert(&event)
 
@@ -26,6 +43,15 @@ func (app *application) createEvent(c *gin.Context) {
 	c.JSON(http.StatusCreated, event)
 }
 
+// getEvents return all events
+//
+// @Summary Get all events
+// @Description Get a list of all events
+// @Tags events
+// @Accept json
+// @Produce json
+// @Success 200 {object} []database.Event
+// @Router /api/v1/events [get]
 func (app *application) getAllEvents(c *gin.Context) {
 	events, err := app.models.Events.GetAll()
 
@@ -59,6 +85,23 @@ func (app *application) getEvent(c *gin.Context) {
 	c.JSON(http.StatusOK, event)
 }
 
+// updateEvent updates an existing event
+//
+// @Summary Update an event
+// @Description Update an existing event by ID
+// @Tags events
+// @Accept json
+// @Produce json
+// @Param id path int true "Event ID"
+// @Param event body database.Event true "Updated event object"
+// @Success 200 {object} database.Event
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Failure 403 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Security BearerAuth
+// @Router /events/{id} [put]
 func (app *application) updateEvent(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 
@@ -67,6 +110,7 @@ func (app *application) updateEvent(c *gin.Context) {
 		return
 	}
 
+	user := app.GetUserFromContext(c)
 	existingEvent, err := app.models.Events.Get(id)
 
 	if err != nil {
@@ -76,6 +120,11 @@ func (app *application) updateEvent(c *gin.Context) {
 
 	if existingEvent == nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
+		return
+	}
+
+	if existingEvent.OwnerId != user.Id {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You do not have permission to update this event"})
 		return
 	}
 
@@ -96,11 +145,42 @@ func (app *application) updateEvent(c *gin.Context) {
 	c.JSON(http.StatusOK, updatedEvent)
 }
 
+// deleteEvent deletes an event
+//
+// @Summary Delete an event
+// @Description Delete an existing event by ID
+// @Tags events
+// @Param id path int true "Event ID"
+// @Success 204 "Event successfully deleted"
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Failure 403 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Security BearerAuth
+// @Router /events/{id} [delete]
 func (app *application) deleteEvent(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid event ID"})
+		return
+	}
+
+	user := app.GetUserFromContext(c)
+	existingEvent, err := app.models.Events.Get(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve event"})
+		return
+	}
+
+	if existingEvent == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
+		return
+	}
+
+	if existingEvent.OwnerId != user.Id {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You do not have permission to delete this event"})
 		return
 	}
 
@@ -145,6 +225,13 @@ func (app *application) addAttendeeToEvent(c *gin.Context) {
 
 	if userToAdd == nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	user := app.GetUserFromContext(c)
+
+	if event.OwnerId != user.Id {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You do not have permission to add attendees to this event"})
 		return
 	}
 
@@ -204,6 +291,24 @@ func (app *application) deleteAttendeeFromEvent(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		return
+	}
+
+	event, err := app.models.Events.Get(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve event"})
+		return
+	}
+
+	if event == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
+		return
+	}
+
+	user := app.GetUserFromContext(c)
+
+	if event.OwnerId != user.Id {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You do not have permission to delete attendees from this event"})
 		return
 	}
 
