@@ -12,15 +12,11 @@ func (app *application) routes() http.Handler {
 	v1 := g.Group("/api/v1")
 	{
 		// Event routes
-		v1.POST("/events", app.createEvent)
 		v1.GET("/events", app.getAllEvents)
 		v1.GET("/events/:id", app.getEvent)
-		v1.PUT("/events/:id", app.updateEvent)
-		v1.DELETE("/events/:id", app.deleteEvent)
+
 		// Attendee routes
-		v1.POST("/events/:id/attendees/:userId", app.addAttendeeToEvent)
 		v1.GET("/events/:id/attendees", app.getAttendeesForEvent)
-		v1.DELETE("/events/:id/attendees/:userId", app.deleteAttendeeFromEvent)
 		v1.GET("/attendees/:userId/events", app.getEventsByAttendee)
 
 		// User routes
@@ -30,5 +26,19 @@ func (app *application) routes() http.Handler {
 		v1.POST("/auth/login", app.login)
 	}
 
+	authGroup := v1.Group("/")
+	authGroup.Use(app.AuthMiddleware())
+	{
+		// 受保護的路由
+
+		// Event routes
+		authGroup.POST("/events", app.createEvent)
+		authGroup.PUT("/events/:id", app.updateEvent)
+		authGroup.DELETE("/events/:id", app.deleteEvent)
+
+		// Attendee routes
+		authGroup.POST("/events/:id/attendees/:userId", app.addAttendeeToEvent)
+		authGroup.DELETE("/events/:id/attendees/:userId", app.deleteAttendeeFromEvent)
+	}
 	return g
 }

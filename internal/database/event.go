@@ -15,7 +15,7 @@ type Event struct {
 	OwnerId     int       `json:"owner_id" binding:"required"`
 	Name        string    `json:"name" binding:"required,min=3"`
 	Description string    `json:"description" binding:"required,min=10"`
-	Date        time.Time `json:"date" binding:"required,datetime=2006-01-02T15:04:05Z07:00"`
+	Date        time.Time `json:"date" binding:"required"`
 	Location    string    `json:"location" binding:"required,min=3"`
 }
 
