@@ -32,7 +32,7 @@ A complete, production-ready REST API built with Go and Gin framework, featuring
 
 ```bash
 # Clone the repository
-git clone https://github.com/brookhaven13/golang-api-template
+git clone https://github.com/brookhaven13/golang-event-api
 
 # Install dependencies
 go mod tidy
