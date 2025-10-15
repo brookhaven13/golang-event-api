@@ -1,34 +1,87 @@
-# Go Restful API Template
+# 📋 Event Management REST API
 
-A RESTful API built with Go for event management.
+A complete, production-ready REST API built with Go and Gin framework, featuring comprehensive authentication, authorization, and interactive API documentation.
 
-## Features
+## ✨ Key Features
 
-- 🎯 Event CRUD operations
-- 👤 User authentication with JWT
-- 🗄️ SQLite database with migrations
-- 🔄 Hot reloading with Air
-- 📊 Clean architecture
+🔐 **Authentication & Security**
+- JWT-based authentication system
+- Secure user registration and login
+- Bearer token authorization
+- Ownership-based access control
 
-## Quick Start
+📚 **Interactive Documentation** 
+- Complete Swagger/OpenAPI 3.0 documentation
+- Interactive API testing interface
+- Comprehensive endpoint documentation with examples
 
-1. Clone the repository
-2. Install dependencies: `go mod tidy`
-3. Run migrations: `go run cmd/migrate/main.go`
-4. Start the server: `air` or `go run cmd/api/main.go`
+🎯 **Event Management**
+- Full CRUD operations for events
+- User ownership validation
+- Attendee management system
+- RESTful API design principles
 
-## API Endpoints
+🛠️ **Technical Stack**
+- **Backend**: Go 1.24+ with Gin framework
+- **Database**: SQLite with migration support
+- **Authentication**: JWT tokens with HMAC-SHA256
+- **Documentation**: Swagger/OpenAPI with Gin-Swagger
+- **Development**: Air for hot reloading
 
-- `GET /api/v1/events` - Get all events
-- `POST /api/v1/events` - Create new event
-- `GET /api/v1/events/:id` - Get event by ID
-- `PUT /api/v1/events/:id` - Update event
-- `DELETE /api/v1/events/:id` - Delete event
+## 🚀 Quick Start
 
-## Tech Stack
+```bash
+# Clone the repository
+git clone https://github.com/brookhaven13/golang-api-template
 
-- **Language**: Go
-- **Framework**: Gin
-- **Database**: SQLite
-- **Authentication**: JWT
-- **Hot Reload**: Air
+# Install dependencies
+go mod tidy
+
+# Run the application
+go run cmd/api/*.go
+
+# Visit Swagger UI
+http://localhost:8080/swagger/
+```
+
+## 📖 API Endpoints
+
+### Public Endpoints
+- `GET /api/v1/events` - List all events
+- `POST /auth/register` - User registration
+- `POST /auth/login` - User authentication
+
+### Protected Endpoints (Requires JWT)
+- `POST /events` - Create new event
+- `PUT /events/{id}` - Update event (owner only)
+- `DELETE /events/{id}` - Delete event (owner only)
+- `POST /events/{id}/attendees/{userId}` - Add attendee
+- `DELETE /events/{id}/attendees/{userId}` - Remove attendee
+
+## 🔧 Environment Configuration
+
+```bash
+PORT=8080
+JWT_SECRET=your_secure_jwt_secret
+```
+
+## 📈 Perfect for Learning
+
+- Modern Go backend patterns
+- RESTful API design
+- JWT authentication implementation
+- Database operations with migrations
+- API documentation best practices
+- Docker containerization ready
+
+## 🏷️ GitHub Topics
+
+```
+golang, gin, rest-api, jwt, swagger, authentication, backend, api, go-gin, openapi, sqlite, migration, docker-ready, production-ready
+```
+
+## 💬 One-liner Description
+
+```
+Complete Go REST API with JWT auth, Swagger docs & event management - perfect for learning modern backend development! 🚀
+```
