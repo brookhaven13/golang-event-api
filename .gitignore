@@ -22,3 +22,5 @@ Thumbs.db
 *.dll
 *.so
 *.dylib
+
+event-app
