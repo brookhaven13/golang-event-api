@@ -1,13 +1,12 @@
 package main
 
 import (
-	"database/sql"
 	"log"
 	"os"
 
-	"github.com/golang-migrate/migrate"
-	"github.com/golang-migrate/migrate/database/sqlite3"
-	"github.com/golang-migrate/migrate/source/file"
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 func main() {
@@ -17,27 +16,23 @@ func main() {
 
 	direction := os.Args[1]
 
-	db, err := sql.Open("sqlite3", "./data.db")
-
-	if err != nil {
-		log.Fatal(err)
+	user := os.Getenv("POSTGRES_USER")
+	if user == "" {
+		user = "postgres"
+	}
+	password := os.Getenv("POSTGRES_PASSWORD")
+	if password == "" {
+		password = "your_password"
+	}
+	dsn := os.Getenv("POSTGRES_DSN")
+	if dsn == "" {
+		dsn = "postgres://" + user + ":" + password + "@localhost:5432/eventdb?sslmode=disable"
 	}
 
-	defer db.Close()
-
-	instance, err := sqlite3.WithInstance(db, &sqlite3.Config{})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fSrc, err := (&file.File{}).Open("cmd/migrate/migrations")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	m, err := migrate.NewWithInstance("file", fSrc, "sqlite3", instance)
-
+	m, err := migrate.New(
+		"file://cmd/migrate/migrations",
+		dsn,
+	)
 	if err != nil {
 		log.Fatal(err)
 	}

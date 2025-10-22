@@ -9,7 +9,7 @@ import (
 	_ "event-api-app/docs"
 
 	_ "github.com/joho/godotenv/autoload"
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/lib/pq"
 )
 
 // @title Go Gin Rest API
@@ -17,7 +17,7 @@ import (
 // @description This is a sample server for a Go Gin Rest API application.
 // @termsOfService http://swagger.io/terms/
 // @contact.name API Support
-// @contact.email support@example.com
+// @contact.email brookhave.dev@gmail.com
 // @host localhost:8080
 // @BasePath /api/v1
 // @securityDefinitions.apikey BearerAuth
@@ -32,7 +32,10 @@ type application struct {
 }
 
 func main() {
-	db, err := sql.Open("sqlite3", "./data.db")
+	user := env.GetEnvString("POSTGRES_USER", "postgres")
+	password := env.GetEnvString("POSTGRES_PASSWORD", "your_password")
+	dsn := env.GetEnvString("POSTGRES_DSN", "postgres://"+user+":"+password+"@localhost:5432/eventdb?sslmode=disable")
+	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		log.Fatal(err)
 	}

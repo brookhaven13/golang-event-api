@@ -60,10 +60,35 @@ http://localhost:8080/swagger/
 
 ## 🔧 Environment Configuration
 
-```bash
+```env
 PORT=8080
 JWT_SECRET=your_secure_jwt_secret
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=your_password
+POSTGRES_DSN=postgres://postgres:your_password@localhost:5432/eventdb?sslmode=disable
 ```
+
+## 🗄️ PostgreSQL 設定教學
+
+1. 安裝 PostgreSQL 並啟動服務。
+2. 建立資料庫：
+	```sh
+	createdb -U postgres -h localhost eventdb
+	```
+3. 建立/設定使用者與密碼（如需自訂）：
+	```sh
+	psql -U postgres -h localhost
+	CREATE USER your_user WITH PASSWORD 'your_password';
+	GRANT ALL PRIVILEGES ON DATABASE eventdb TO your_user;
+	```
+4. 在 `.env` 檔案設定：
+	```env
+	POSTGRES_USER=your_user
+	POSTGRES_PASSWORD=your_password
+	POSTGRES_DSN=postgres://your_user:your_password@localhost:5432/eventdb?sslmode=disable
+	```
+
+請勿將 `.env` 檔案加入版本控制，確保帳號密碼安全。
 
 ## 📈 Perfect for Learning
 
