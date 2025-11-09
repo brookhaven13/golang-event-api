@@ -10,6 +10,7 @@ import (
 
 func (app *application) routes() http.Handler {
 	g := gin.Default()
+	g.Use(CORSMiddleware())
 
 	v1 := g.Group("/api/v1")
 	{

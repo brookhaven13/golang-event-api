@@ -1,26 +1,5 @@
+# Built binary (in parent directory)
+../event-api
+
 # Environment variables
 .env
-
-# Built binary
-tmp/
-
-# Database file
-data.db
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Go specific
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-
-event-api
