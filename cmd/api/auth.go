@@ -23,6 +23,7 @@ type loginRequest struct {
 
 type loginResponse struct {
 	Token string `json:"token"`
+	User  string `json:"name"`
 }
 
 // login authenticates user and returns JWT token
@@ -76,7 +77,7 @@ func (app *application) login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, loginResponse{Token: tokenString})
+	c.JSON(http.StatusOK, loginResponse{Token: tokenString, User: existingUser.Name})
 }
 
 // registerUser creates a new user account
