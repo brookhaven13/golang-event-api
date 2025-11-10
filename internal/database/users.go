@@ -15,6 +15,7 @@ type User struct {
 	Email    string `json:"email"`
 	Name     string `json:"name"`
 	Password string `json:"-"`
+	Role     string `json:"role"`
 }
 
 func (m *UserModel) Insert(user *User) error {
@@ -22,11 +23,11 @@ func (m *UserModel) Insert(user *User) error {
 	defer cancel()
 
 	query := `
-		INSERT INTO users (email, password, name)
-		VALUES ($1, $2, $3)
+		INSERT INTO users (email, password, name, role)
+		VALUES ($1, $2, $3, $4)
 		RETURNING id
 	`
-	return m.DB.QueryRowContext(ctx, query, user.Email, user.Password, user.Name).Scan(&user.Id)
+	return m.DB.QueryRowContext(ctx, query, user.Email, user.Password, user.Name, user.Role).Scan(&user.Id)
 }
 
 func (m *UserModel) getUser(query string, args ...interface{}) (*User, error) {
@@ -35,7 +36,7 @@ func (m *UserModel) getUser(query string, args ...interface{}) (*User, error) {
 
 	var user User
 
-	err := m.DB.QueryRowContext(ctx, query, args...).Scan(&user.Id, &user.Email, &user.Name, &user.Password)
+	err := m.DB.QueryRowContext(ctx, query, args...).Scan(&user.Id, &user.Email, &user.Name, &user.Password, &user.Role)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -48,7 +49,7 @@ func (m *UserModel) getUser(query string, args ...interface{}) (*User, error) {
 
 func (m *UserModel) Get(id int) (*User, error) {
 	query := `
-		SELECT id, email, name, password
+		SELECT id, email, name, password, role
 		FROM users
 		WHERE id = $1
 	`

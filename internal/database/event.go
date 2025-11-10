@@ -12,7 +12,8 @@ type EventModel struct {
 
 type Event struct {
 	Id          int       `json:"id"`
-	OwnerId     int       `json:"owner_id"`
+	OwnerId     int       `json:"-"`
+	Owner       *User     `json:"owner,omitempty"`
 	Name        string    `json:"name" binding:"required,min=3"`
 	Description string    `json:"description" binding:"required,min=10"`
 	Date        time.Time `json:"date" binding:"required"`
@@ -43,7 +44,12 @@ func (m *EventModel) GetAll() ([]*Event, error) {
 
 	defer cancel()
 
-	query := "SELECT * FROM events"
+	query := `
+		SELECT e.id, e.owner_id, e.name, e.description, e.date, e.location,
+		       u.id, u.email, u.name, u.role
+		FROM events e
+		LEFT JOIN users u ON e.owner_id = u.id
+	`
 
 	rows, err := m.DB.QueryContext(ctx, query)
 
@@ -57,12 +63,17 @@ func (m *EventModel) GetAll() ([]*Event, error) {
 
 	for rows.Next() {
 		var event Event
+		var owner User
 
-		err := rows.Scan(&event.Id, &event.OwnerId, &event.Name, &event.Description, &event.Date, &event.Location)
+		err := rows.Scan(
+			&event.Id, &event.OwnerId, &event.Name, &event.Description, &event.Date, &event.Location,
+			&owner.Id, &owner.Email, &owner.Name, &owner.Role,
+		)
 		if err != nil {
 			return nil, err
 		}
 
+		event.Owner = &owner
 		events = append(events, &event)
 	}
 
@@ -77,11 +88,21 @@ func (m *EventModel) Get(id int) (*Event, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	query := "SELECT * FROM events WHERE id = $1"
+	query := `
+		SELECT e.id, e.owner_id, e.name, e.description, e.date, e.location,
+		       u.id, u.email, u.name, u.role
+		FROM events e
+		LEFT JOIN users u ON e.owner_id = u.id
+		WHERE e.id = $1
+	`
 
 	var event Event
+	var owner User
 
-	err := m.DB.QueryRowContext(ctx, query, id).Scan(&event.Id, &event.OwnerId, &event.Name, &event.Description, &event.Date, &event.Location)
+	err := m.DB.QueryRowContext(ctx, query, id).Scan(
+		&event.Id, &event.OwnerId, &event.Name, &event.Description, &event.Date, &event.Location,
+		&owner.Id, &owner.Email, &owner.Name, &owner.Role,
+	)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -89,6 +110,7 @@ func (m *EventModel) Get(id int) (*Event, error) {
 		return nil, err
 	}
 
+	event.Owner = &owner
 	return &event, nil
 }
 

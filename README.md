@@ -50,11 +50,12 @@ http://localhost:8080/swagger/
 - `GET /api/v1/events` - List all events
 - `POST /auth/register` - User registration
 - `POST /auth/login` - User authentication
+- `GET /events/{id}/attendees` - Get attendees for event
 
 ### Protected Endpoints (Requires JWT)
 - `POST /events` - Create new event
-- `PUT /events/{id}` - Update event (owner only)
-- `DELETE /events/{id}` - Delete event (owner only)
+- `PUT /events/{id}` - Update event (owner and admin only)
+- `DELETE /events/{id}` - Delete event (owner and admin only)
 - `POST /events/{id}/attendees/{userId}` - Add attendee
 - `DELETE /events/{id}/attendees/{userId}` - Remove attendee
 
@@ -63,9 +64,9 @@ http://localhost:8080/swagger/
 ```env
 PORT=8080
 JWT_SECRET=your_secure_jwt_secret
-POSTGRES_USER=postgres
+POSTGRES_USER=your_username
 POSTGRES_PASSWORD=your_password
-POSTGRES_DSN=postgres://postgres:your_password@localhost:5432/eventdb?sslmode=disable
+POSTGRES_DSN=postgres://your_username:your_password@localhost:5432/eventdb?sslmode=disable
 ```
 
 ## 🗄️ PostgreSQL 設定教學

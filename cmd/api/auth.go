@@ -114,6 +114,7 @@ func (app *application) registerUser(c *gin.Context) {
 		Email:    register.Email,
 		Password: register.Password,
 		Name:     register.Name,
+		Role:     "user", // Default role is "user"
 	}
 
 	err = app.models.Users.Insert(&user)

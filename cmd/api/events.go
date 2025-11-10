@@ -123,7 +123,8 @@ func (app *application) updateEvent(c *gin.Context) {
 		return
 	}
 
-	if existingEvent.OwnerId != user.Id {
+	// Admin can update any event, regular users can only update their own events
+	if user.Role != "admin" && existingEvent.OwnerId != user.Id {
 		c.JSON(http.StatusForbidden, gin.H{"error": "You do not have permission to update this event"})
 		return
 	}
@@ -179,7 +180,8 @@ func (app *application) deleteEvent(c *gin.Context) {
 		return
 	}
 
-	if existingEvent.OwnerId != user.Id {
+	// Admin can delete any event, regular users can only delete their own events
+	if user.Role != "admin" && existingEvent.OwnerId != user.Id {
 		c.JSON(http.StatusForbidden, gin.H{"error": "You do not have permission to delete this event"})
 		return
 	}
