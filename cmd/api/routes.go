@@ -42,6 +42,9 @@ func (app *application) routes() http.Handler {
 		// Attendee routes
 		authGroup.POST("/events/:id/attendees/:userId", app.addAttendeeToEvent)
 		authGroup.DELETE("/events/:id/attendees/:userId", app.deleteAttendeeFromEvent)
+
+		// User update route
+		authGroup.PUT("/auth/user", app.updateUser)
 	}
 
 	g.GET("/swagger/*any", func(c *gin.Context) {

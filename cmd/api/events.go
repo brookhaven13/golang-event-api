@@ -230,15 +230,9 @@ func (app *application) addAttendeeToEvent(c *gin.Context) {
 		return
 	}
 
-	user := app.GetUserFromContext(c)
-
-	if event.OwnerId != user.Id {
-		c.JSON(http.StatusForbidden, gin.H{"error": "You do not have permission to add attendees to this event"})
-		return
-	}
-
 	// Check if the attendee already exists
 	existingAttendee, err := app.models.Attendees.GetByEventAndAttendee(eventId, userId)
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve attendee"})
 		return

@@ -126,3 +126,40 @@ func (app *application) registerUser(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, user)
 }
+
+type updateUserRequest struct {
+	Email    string `json:"email" binding:"omitempty,email"`
+	Name     string `json:"name" binding:"omitempty,min=2"`
+	Password string `json:"password" binding:"omitempty,min=8"`
+}
+
+// updateUser updates user information
+//
+// @Summary Update user information
+// @Description Update user email, name, and password
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param user body updateUserRequest true "User update data"
+// @Success 200 {object} database.User
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /auth/user [put]
+func (app *application) updateUser(c *gin.Context) {
+	var updateReq updateUserRequest
+
+	if err := c.ShouldBindJSON(&updateReq); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	userId := c.MustGet("user_id").(int)
+
+	updatedUser, err := app.models.Users.Update(userId, updateReq.Email, updateReq.Name, updateReq.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to update user"})
+		return
+	}
+
+	c.JSON(http.StatusOK, updatedUser)
+}

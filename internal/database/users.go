@@ -63,3 +63,28 @@ func (m *UserModel) GetByEmail(email string) (*User, error) {
 	`
 	return m.getUser(query, email)
 }
+
+func (m *UserModel) Update(id int, email, name, password string) (*User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `
+		UPDATE users
+		SET email = COALESCE(NULLIF($1, ''), email),
+		    name = COALESCE(NULLIF($2, ''), name),
+		    password = COALESCE(NULLIF($3, ''), password)
+		WHERE id = $4
+		RETURNING id, email, name, password, role
+	`
+
+	var user User
+	err := m.DB.QueryRowContext(ctx, query, email, name, password, id).Scan(
+		&user.Id, &user.Email, &user.Name, &user.Password, &user.Role,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
