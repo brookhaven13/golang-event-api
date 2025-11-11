@@ -58,6 +58,7 @@ http://localhost:8080/swagger/
 - `DELETE /events/{id}` - Delete event (owner and admin only)
 - `POST /events/{id}/attendees/{userId}` - Add attendee
 - `DELETE /events/{id}/attendees/{userId}` - Remove attendee
+- `PUT /auth/user` - Update user information (email, name, password)
 
 ## 🔧 Environment Configuration
 
