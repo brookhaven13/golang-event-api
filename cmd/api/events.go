@@ -277,14 +277,12 @@ func (app *application) getAttendeesForEvent(c *gin.Context) {
 
 func (app *application) deleteAttendeeFromEvent(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
-
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid event ID"})
 		return
 	}
 
 	userId, err := strconv.Atoi(c.Param("userId"))
-
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
 		return
@@ -303,13 +301,13 @@ func (app *application) deleteAttendeeFromEvent(c *gin.Context) {
 
 	user := app.GetUserFromContext(c)
 
-	if event.OwnerId != user.Id {
-		c.JSON(http.StatusForbidden, gin.H{"error": "You do not have permission to delete attendees from this event"})
+	// Allow admin to remove any user or allow users to remove themselves
+	if user.Role != "admin" && user.Id != userId {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You do not have permission to remove this attendee"})
 		return
 	}
 
 	err = app.models.Attendees.Delete(userId, id)
-
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete attendee from event"})
 		return
