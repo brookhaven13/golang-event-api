@@ -34,7 +34,7 @@ type loginResponse struct {
 // @Accept json
 // @Produce json
 // @Param credentials body loginRequest true "User login credentials"
-// @Success 200 {object} loginResponse
+// @Success 200 {object} database.User
 // @Failure 400 {object} map[string]string
 // @Failure 401 {object} map[string]string
 // @Failure 500 {object} map[string]string
@@ -88,7 +88,7 @@ func (app *application) login(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param user body registerRequest true "User registration data"
-// @Success 201 {object} database.User
+// @Success 201 {object} loginResponse
 // @Failure 400 {object} map[string]string
 // @Failure 409 {object} map[string]string
 // @Failure 500 {object} map[string]string
@@ -155,7 +155,7 @@ func (app *application) updateUser(c *gin.Context) {
 
 	userId := c.MustGet("user_id").(int)
 
-	updatedUser, err := app.models.Users.Update(userId, updateReq.Email, updateReq.Name, updateReq.Password)
+	updatedUser, err := app.models.Users.Update(userId, updateReq.Email, updateReq.Name)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to update user"})
 		return
