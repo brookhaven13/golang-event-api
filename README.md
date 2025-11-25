@@ -51,6 +51,7 @@ http://localhost:8080/swagger/
 - `POST /auth/register` - User registration
 - `POST /auth/login` - User authentication
 - `GET /events/{id}/attendees` - Get attendees for event
+- `GET /users/{userId}/events` - Get events by attendee
 
 ### Protected Endpoints (Requires JWT)
 - `POST /events` - Create new event
@@ -59,6 +60,7 @@ http://localhost:8080/swagger/
 - `POST /events/{id}/attendees/{userId}` - Add attendee
 - `DELETE /events/{id}/attendees/{userId}` - Remove attendee
 - `PUT /auth/user` - Update user information (email, name, password)
+- `DELETE /events/{id}/attendees/{userId}` - Remove attendee from event (admin or self)
 
 ## 🔧 Environment Configuration
 
