@@ -42,6 +42,12 @@ definitions:
         type: string
       role:
         type: string
+      verified:
+        type: boolean
+      verify_token:
+        type: string
+      verify_token_expires:
+        type: string
     type: object
   main.loginRequest:
     properties:
