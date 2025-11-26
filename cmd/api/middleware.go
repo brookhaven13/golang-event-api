@@ -1,6 +1,7 @@
 package main
 
 import (
+	"event-api-app/internal/database"
 	"net/http"
 	"strings"
 
@@ -64,17 +65,42 @@ func (app *application) AuthMiddleware() gin.HandlerFunc {
 
 // CORSMiddleware 處理跨域請求
 func CORSMiddleware() gin.HandlerFunc {
-return func(c *gin.Context) {
-c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE, PATCH")
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE, PATCH")
 
-if c.Request.Method == "OPTIONS" {
-c.AbortWithStatus(204)
-return
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
 }
 
-c.Next()
-}
+// 檢查用戶使用是否已經通過 email 驗證
+func RequireVerifiedUser() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		user, exists := c.Get("user") // 從 context 獲取用戶物件
+
+		if !exists {
+			// 如果 Context 中沒有用戶，返回 401 Unauthorized
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			c.Abort()
+			return
+		}
+
+		// 確保用戶物件類型正確
+		u, ok := user.(*database.User)
+		if !ok || !u.Verified {
+			// 如果用戶未驗證，返回 403 Forbidden
+			c.JSON(http.StatusForbidden, gin.H{"error": "Email not verified"})
+			c.Abort()
+			return
+		}
+
+		c.Next()
+	}
 }

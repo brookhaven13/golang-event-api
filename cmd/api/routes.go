@@ -35,13 +35,13 @@ func (app *application) routes() http.Handler {
 		// 受保護的路由
 
 		// Event routes
-		authGroup.POST("/events", app.createEvent)
-		authGroup.PUT("/events/:id", app.updateEvent)
-		authGroup.DELETE("/events/:id", app.deleteEvent)
+		authGroup.POST("/events", RequireVerifiedUser(), app.createEvent)
+		authGroup.PUT("/events/:id", RequireVerifiedUser(), app.updateEvent)
+		authGroup.DELETE("/events/:id", RequireVerifiedUser(), app.deleteEvent)
 
 		// Attendee routes
-		authGroup.POST("/events/:id/attendees/:userId", app.addAttendeeToEvent)
-		authGroup.DELETE("/events/:id/attendees/:userId", app.deleteAttendeeFromEvent)
+		authGroup.POST("/events/:id/attendees/:userId", RequireVerifiedUser(), app.addAttendeeToEvent)
+		authGroup.DELETE("/events/:id/attendees/:userId", RequireVerifiedUser(), app.deleteAttendeeFromEvent)
 
 		// User update route
 		authGroup.PUT("/auth/user", app.updateUser)
